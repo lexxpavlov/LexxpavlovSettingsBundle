@@ -1,0 +1,62 @@
+{% block setting_value_widget %}
+{% set subject = sonata_admin.admin.subject %}
+{% set value = subject.value %}
+{% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::Boolean') %}{{ block('choice_widget') }}{% endif %}
+{% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::Integer') %}{% set type = 'number' %}{{ block('form_widget_simple') }}{% endif %}
+{% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::Float') %}{% set type = 'number' %}{% set attr = attr|merge({step:'any'}) %}{{ block('form_widget_simple') }}{% endif %}
+{% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::String') %}{{ block('form_widget_simple') }}{% endif %}
+{% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::Text') %}{{ block('textarea_widget') }}{% endif %}
+{% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::Html') %}{{ block(html_widget ? html_widget~'_widget': 'textarea_widget') }}{% endif %}
+</div>
+
+<div>
+{% if not subject.id %}
+<script type="text/html" id="tpl_widget_boolean">
+{{- block('choice_widget') -}}
+</script>
+<script type="text/html" id="tpl_widget_string">
+{{- block('form_widget_simple') -}}
+</script>
+<script type="text/html" id="tpl_widget_text">
+{{- block('textarea_widget') -}}
+</script>
+<script type="text/html" id="tpl_widget_html">
+{{- block('textarea_widget') -}}
+</script>
+<script type="text/html" id="tpl_widget_int">
+{% set type = 'number' %}
+{{- block('form_widget_simple') -}}
+</script>
+<script type="text/html" id="tpl_widget_float">
+{% set attr = attr|merge({step:'any'}) %}
+{{- block('form_widget_simple') -}}
+</script>
+
+{% if html_widget == 'ckeditor' %}
+<script type="text/javascript">
+    var CKEDITOR_BASEPATH = "{{ ckeditor_base_path(base_path) }}";
+</script>
+<script type="text/javascript" src="{{ ckeditor_js_path(js_path) }}"></script>
+{% endif %}
+<script type="text/javascript">
+    var settings_widgets = {};
+    var form_id = '';
+    var $valueContainer;
+
+    $(function(){
+        form_id = $('.form-group label[for$=_value]').attr('for').replace('_value', '');
+        $valueContainer = $('#sonata-ba-field-container-'+form_id+'_value .sonata-ba-field');
+        $('#'+form_id+'_type').change(function(){ setValueType($(this).val()); });
+    });
+    function setValueType(type) {
+        //var el = settings_widgets[type].clone();
+        var el = $($('#tpl_widget_' + type).html());
+        el.find('[id$=_value]').attr('name', form_id + '[value]');
+        $valueContainer.empty().append(el);
+        switch(type) {
+            case 'html': window.CKEDITOR && CKEDITOR.replace(form_id+'_value'); break;
+        }
+    }
+</script>
+{% endif %}
+{% endblock %}

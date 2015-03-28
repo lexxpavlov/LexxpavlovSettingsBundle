@@ -1,0 +1,24 @@
+# Admin titles
+Categories: Категории
+Settings: Настройки
+Category List: Список категорий
+Settings List: Список настроек
+
+# Field titles
+Name: Название
+Category: Категория
+Type: Тип
+Value: Значение
+Comment: Комментарий
+
+# Settings types
+Boolean: Логический
+Integer: Целое число
+Float: Дробное число
+String: Строковый
+Text: Текст
+Html: Html
+
+# Other
+Off: Выключено
+On: Включено

@@ -1,0 +1,21 @@
+services:
+    lexxpavlov_settings.settings:
+        class: Lexxpavlov\SettingsBundle\Service\Settings
+        arguments:
+            - @doctrine.orm.entity_manager
+            - @service_container
+            - %lexxpavlov_settings.cache_provider%]
+
+    lexxpavlov_settings.twig.settings:
+        class: Lexxpavlov\SettingsBundle\Twig\SettingsExtension
+        arguments: [@lexxpavlov_settings.settings]
+        tags: [{ name: twig.extension }]
+
+    lexxpavlov_settings.form.type.setting_value:
+        class: Lexxpavlov\SettingsBundle\Form\Type\SettingValueType
+        arguments:
+            - %lexxpavlov_settings.html_widget%
+            - %lexxpavlov_settings.ivory_ck_editor.base_path%
+            - %lexxpavlov_settings.ivory_ck_editor.js_path%
+        tags:
+            - { name: form.type, alias: setting_value }

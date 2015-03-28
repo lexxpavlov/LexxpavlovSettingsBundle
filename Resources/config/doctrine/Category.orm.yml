@@ -1,0 +1,13 @@
+Lexxpavlov\SettingsBundle\Entity\Category:
+    type: entity
+    table: lexxpavlov_settings_categories
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        name:
+            type: string
+            length: 50
+        comment:
+            type: text

@@ -1,0 +1,28 @@
+Lexxpavlov\SettingsBundle\Entity\Settings:
+    type: entity
+    table: lexxpavlov_settings
+    repositoryClass: Lexxpavlov\SettingsBundle\Entity\SettingsRepository
+    indexes:
+        name_idx:
+            columns: [ name ]
+    uniqueConstraints:
+        cat_name_idx:
+            columns: [ category_id, name ]
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        type:
+            type: LexxpavlovSettingsEnumType
+        name:
+            type: string
+            length: 50
+        value:
+            type: text
+        comment:
+            type: text
+            nullable: true
+    manyToOne:
+        category:
+            targetEntity: Lexxpavlov\SettingsBundle\Entity\Category

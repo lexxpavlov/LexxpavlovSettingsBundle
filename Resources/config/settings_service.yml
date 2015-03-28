@@ -1,0 +1,3 @@
+services:
+    settings:
+        alias: lexxpavlov_settings.settings
