@@ -29,7 +29,7 @@ class LexxpavlovSettingsExtension extends Extension
             $ckeditorBasePath = $ckeditorJsPath = $config['html_widget'] = null;
         }
 
-        $container->setParameter('lexxpavlov_settings.cache_provider', $config['cache_provider'] ?: '');
+        $container->setParameter('lexxpavlov_settings.cache_provider', $config['cache_provider']);
         $container->setParameter('lexxpavlov_settings.html_widget', $config['html_widget']);
         $container->setParameter('lexxpavlov_settings.ivory_ck_editor.base_path', $ckeditorBasePath);
         $container->setParameter('lexxpavlov_settings.ivory_ck_editor.js_path', $ckeditorJsPath);

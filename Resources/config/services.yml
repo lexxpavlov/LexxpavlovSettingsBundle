@@ -4,7 +4,7 @@ services:
         arguments:
             - @doctrine.orm.entity_manager
             - @service_container
-            - %lexxpavlov_settings.cache_provider%]
+            - %lexxpavlov_settings.cache_provider%
 
     lexxpavlov_settings.twig.settings:
         class: Lexxpavlov\SettingsBundle\Twig\SettingsExtension
