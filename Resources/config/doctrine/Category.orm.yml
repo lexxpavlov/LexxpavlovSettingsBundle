@@ -9,5 +9,7 @@ Lexxpavlov\SettingsBundle\Entity\Category:
         name:
             type: string
             length: 50
+            unique: true
         comment:
             type: text
+            nullable: true
