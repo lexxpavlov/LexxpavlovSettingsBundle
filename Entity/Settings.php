@@ -136,7 +136,10 @@ class Settings
      */
     public function setValue($value)
     {
-        $this->value = $value;
+        switch ($this->type) {
+            case SettingsType::Boolean: $this->value = $value ? '1' : '0'; break;
+            default: $this->value = (string)$value; break;
+        }
         return $this;
     }
 

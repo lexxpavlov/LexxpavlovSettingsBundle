@@ -6,7 +6,7 @@ This bundle helps you to manage your settings in Symfony2 project.
 Settings has one of type: Boolean, Integer, Float, String, Text, Html. You may get one separate setting or fetch group
 of settings. Fetching of settings may be cached by your cache provider used in project.
 
-Management of settings provides by SonataAdminBundle. In other case you may only get settings.
+Management of settings provides by SonataAdminBundle. In other case you may manage settings via code by use special functions.
 
 Installation (>=Symfony 2.1)
 ------------
@@ -71,7 +71,8 @@ Usage
 -----
 
 Use SonataAdminBundle for manage your settings. This bundle haven't admin tools without Sonata. But you feel free to 
-use the bundle if you configure settings with database tool (phpMyAdmin or other).
+use the bundle if you configure settings with database tool (phpMyAdmin or other) or by use special functions called in 
+your code (e.g. in the controller).
 
 You may put settings to group or not. Groups may be used for fetching several settings at one query.
 
@@ -81,7 +82,7 @@ For example, you created 3 settings:
 * `page_title` without group (in empty group)
 * `description` and `keywords` in `meta` group.
 
-** Use in controller **
+##### Use in controller
 
 ```php
 
@@ -113,7 +114,7 @@ class DefaultController extends Controller
 }
 ```
 
-** Use in template **
+##### Use in template
 
 ```twig
 {% extends '::layout.html.twig'%}
@@ -174,15 +175,39 @@ be only one time.
 Use caching for increase of fetching settings. If you don't use caching already - it is perfect time to do! It's very simple!
 
 ```yaml
-# services.yml
+# app/config/services.yml
 services:
     cache:
         class: Doctrine\Common\Cache\FilesystemCache
         arguments: ["%kernel.cache_dir%/cache"]
 
-# config.yml
+# app/config/config.yml
 lexxpavlov_settings:
     cache_provider: cache
 ```
 
 The bundle will use registered service `cache` for cache data to it.
+
+### Manage settings without Sonata Admin
+
+If you don't use SonataAdminBundle in your project, you may use special functions for manage settings.
+
+```php
+use Lexxpavlov\SettingsBundle\DBAL\SettingsType;
+
+// In controller:
+
+// Get service from container
+$settings = $this->get('settings');
+
+// Update a existed setting
+$settings->update('param', 'new value');
+$settings->update('category', 'param_in_cat', 'new value');
+
+// Create a new setting
+$settings->create(null, 'new.1', SettingsType::Boolean, true, 'comment - setting w/o group');
+$settings->create('test', 'new.2', SettingsType::Text, 'test text', 'comment - setting in group');
+
+// Create a new empty group
+$settings->createGroup('new-cat', 'comment of group');
+```

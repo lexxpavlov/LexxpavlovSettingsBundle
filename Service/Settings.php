@@ -4,6 +4,9 @@ namespace Lexxpavlov\SettingsBundle\Service;
 
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\EntityManager;
+use Lexxpavlov\SettingsBundle\DBAL\SettingsType;
+use Lexxpavlov\SettingsBundle\Entity\Category;
+use Lexxpavlov\SettingsBundle\Entity\Settings as SettingsEntity;
 use Lexxpavlov\SettingsBundle\Entity\SettingsRepository;
 
 class Settings
@@ -115,6 +118,105 @@ class Settings
             $this->groups[$name] = $this->loadGroup($name);
         }
         return $this->groups[$name];
+    }
+
+    /**
+     * Update value of setting.
+     *
+     * Usage:
+     *
+     *     update('name', $value)
+     *
+     *     update('category', 'name', $value)
+     *
+     * @param string $name
+     * @param string|mixed $subname
+     * @param null|mixed $value
+     */
+    public function update($name, $subname, $value = null)
+    {
+        if (!is_null($value)) {
+            $category = $this->getCategory($name);
+            $name = $subname;
+        } else {
+            $category = null;
+            $value = $subname;
+        }
+
+        /** @var SettingsEntity $setting */
+        $setting = $this->repository->findOneBy(array('category' => $category, 'name' => $name));
+        $setting->setValue($value);
+        $this->repository->save($setting);
+
+        if ($category) {
+            $this->groups[$category->getName()][$name] = $value;
+            $this->clearGroupCache($category->getName());
+        } else {
+            $this->settings[$name] = $value;
+            $this->clearCache($name);
+        }
+    }
+
+    public function create($category, $name, $type, $value, $comment = null)
+    {
+        if (!in_array($type, SettingsType::getValues())) {
+            $types = implode(', ', SettingsType::getValues());
+            throw new \InvalidArgumentException("Invalid type \"$type\". Type must be one of $types");
+        }
+
+        /** @var Category $category */
+        $category = $this->getCategory($category);
+
+        /** @var SettingsEntity $setting */
+        $setting = new SettingsEntity();
+        $setting
+            ->setCategory($category)
+            ->setType($type)
+            ->setName($name)
+            ->setValue($value)
+            ->setComment($comment)
+        ;
+        $this->repository->save($setting);
+
+        if ($category) {
+            $this->groups[$category->getName()][$name] = $value;
+        } else {
+            $this->settings[$name] = $value;
+        }
+
+        return $setting;
+    }
+
+    /**
+     * @param string $name Name of new category
+     * @param string|null $comment Optional comment
+     */
+    public function createGroup($name, $comment = null)
+    {
+        $category = new Category();
+        $category
+            ->setName($name)
+            ->setComment($comment)
+        ;
+        $this->em->persist($category);
+        $this->em->flush();
+    }
+
+    /**
+     * @param string $name
+     * @return Category|null
+     */
+    private function getCategory($name)
+    {
+        if (!$name) return null;
+        $category = $this->em->getRepository('LexxpavlovSettingsBundle:Category')->findOneBy(array('name' => $name));
+        if (!$category) {
+            $category = new Category();
+            $category->setName($name);
+            $this->em->persist($category);
+            $this->em->flush();
+        }
+        return $category;
     }
 
     /**
