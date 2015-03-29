@@ -55,6 +55,17 @@ Configuration
 Bundle does not need any required parameters and will work without changes in `config.yml`. But you may config some 
 parameters, read more below.
 
+But you need to set up `enum` mapping type in Doctrine config:
+
+```yaml
+# app/config/config.yml
+doctrine:
+    dbal:
+        mapping_types:
+            enum: string
+```
+
+
 Now you need create the tables in your database:
 
 ```bash
