@@ -121,6 +121,30 @@ class Settings
     }
 
     /**
+     * Save setting entity
+     *
+     * @param SettingsEntity $setting
+     */
+    public function save(SettingsEntity $setting)
+    {
+        if ($setting) {
+            $this->repository->save($setting);
+        }
+    }
+
+    /**
+     * Save category entity
+     *
+     * @param Category $category
+     */
+    public function saveGroup(Category $category)
+    {
+        if ($category) {
+            $this->saveCategory($category);
+        }
+    }
+
+    /**
      * Update value of setting.
      *
      * Usage:
@@ -198,8 +222,7 @@ class Settings
             ->setName($name)
             ->setComment($comment)
         ;
-        $this->em->persist($category);
-        $this->em->flush();
+        $this->saveCategory($category);
     }
 
     /**
@@ -213,6 +236,18 @@ class Settings
         if (!$category) {
             $category = new Category();
             $category->setName($name);
+            $this->saveCategory($category);
+        }
+        return $category;
+    }
+
+    /**
+     * @param Category $category
+     * @return Category
+     */
+    private function saveCategory(Category $category)
+    {
+        if ($category) {
             $this->em->persist($category);
             $this->em->flush();
         }

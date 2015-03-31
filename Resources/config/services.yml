@@ -19,3 +19,11 @@ services:
             - %lexxpavlov_settings.ivory_ck_editor.js_path%
         tags:
             - { name: form.type, alias: setting_value }
+
+    lexxpavlov_settings.form.settings:
+        class: Lexxpavlov\SettingsBundle\Form\Settings
+        tags: [{ name: form.type, alias: lexxpavlov_settings }]
+
+    lexxpavlov_settings.form.category:
+        class: Lexxpavlov\SettingsBundle\Form\Category
+        tags: [{ name: form.type, alias: lexxpavlov_settings_category }]

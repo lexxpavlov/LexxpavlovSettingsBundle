@@ -201,7 +201,36 @@ The bundle will use registered service `cache` for cache data to it.
 
 ### Manage settings without Sonata Admin
 
-If you don't use SonataAdminBundle in your project, you may use special functions for manage settings.
+If you don't use SonataAdminBundle in your project, you may use predefined forms or special functions.
+
+##### Use predefined forms (in controller)
+
+Save setting:
+```php
+$form = $this->createForm('lexxpavlov_settings');
+if ($request->isMethod('POST')) {
+    $form->handleRequest($request);
+    if ($form->isValid()) {
+        $this->get('settings')->save($form->getData());
+    }
+}
+
+return array( 'form' => $form->createView() );
+```
+Save group:
+```php
+$form = $this->createForm('lexxpavlov_settings_category');
+if ($request->isMethod('POST')) {
+    $form->handleRequest($request);
+    if ($form->isValid()) {
+        $this->get('settings')->saveGroup($form->getData());
+    }
+}
+
+return array( 'form' => $form->createView() );
+```
+
+##### Manual create and update settings
 
 ```php
 use Lexxpavlov\SettingsBundle\DBAL\SettingsType;

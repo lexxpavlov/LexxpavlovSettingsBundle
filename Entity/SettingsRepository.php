@@ -3,7 +3,6 @@
 namespace Lexxpavlov\SettingsBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
-use Lexxpavlov\SettingsBundle\Entity\Settings;
 
 class SettingsRepository extends EntityRepository
 {
