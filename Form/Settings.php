@@ -24,7 +24,7 @@ class Settings extends AbstractType
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $this->setupOptions($resolver);
+        $this->configureOptions($resolver);
     }
 
     public function configureOptions(OptionsResolver $resolver)
