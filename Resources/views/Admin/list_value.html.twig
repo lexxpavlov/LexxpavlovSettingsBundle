@@ -8,7 +8,7 @@
             <i class="fa fa-times"></i> {% trans %}Off{% endtrans %}
         {% endif %}
     {% else %}
-        {{ object.value }}
+        {{ object.value[:80] }}
     {% endif %}
 {% endspaceless %}
 {% endblock %}

@@ -31,6 +31,17 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('cache_provider')
                     ->defaultNull()
                 ->end()
+                ->arrayNode('ckeditor')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('base_path')
+                            ->defaultNull()
+                        ->end()
+                        ->scalarNode('js_path')
+                            ->defaultNull()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 

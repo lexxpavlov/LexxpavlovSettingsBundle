@@ -3,11 +3,9 @@
 namespace Lexxpavlov\SettingsBundle\Entity;
 
 use Lexxpavlov\SettingsBundle\DBAL\SettingsType;
-use Lexxpavlov\SettingsBundle\Entity\Category;
 
 class Settings
 {
-
     /**
      * @var integer
      */
@@ -29,7 +27,7 @@ class Settings
     protected $name;
 
     /**
-     * @var mixed
+     * @var string
      */
     protected $value;
 
@@ -124,8 +122,6 @@ class Settings
             case SettingsType::Boolean: return $this->value ? true : false;
             case SettingsType::Integer: return (int)$this->value;
             case SettingsType::Float: return (float)$this->value;
-            case SettingsType::Text:
-            case SettingsType::Html: return mb_substr($this->value, 0, 80, 'UTF-8');
             default: return $this->value;
         }
     }
@@ -137,7 +133,7 @@ class Settings
     public function setValue($value)
     {
         switch ($this->type) {
-            case SettingsType::Boolean: $this->value = $value ? '1' : '0'; break;
+            case SettingsType::Boolean: $this->value = ($value === true || (float)$value != 0 || mb_strtolower($value, 'UTF-8') == 'on') ? '1' : '0'; break;
             default: $this->value = (string)$value; break;
         }
         return $this;

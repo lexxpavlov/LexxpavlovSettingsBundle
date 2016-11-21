@@ -22,17 +22,10 @@ class LexxpavlovSettingsExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        if ($config['html_widget'] == 'ckeditor' && $container->hasParameter('ivory_ck_editor.form.type.base_path')) {
-            $ckeditorBasePath = $container->getParameter('ivory_ck_editor.form.type.base_path');
-            $ckeditorJsPath = $container->getParameter('ivory_ck_editor.form.type.js_path');
-        } else {
-            $ckeditorBasePath = $ckeditorJsPath = $config['html_widget'] = null;
-        }
-
         $container->setParameter('lexxpavlov_settings.cache_provider', $config['cache_provider']);
         $container->setParameter('lexxpavlov_settings.html_widget', $config['html_widget']);
-        $container->setParameter('lexxpavlov_settings.ivory_ck_editor.base_path', $ckeditorBasePath);
-        $container->setParameter('lexxpavlov_settings.ivory_ck_editor.js_path', $ckeditorJsPath);
+        $container->setParameter('lexxpavlov_settings.ckeditor.base_path', $config['ckeditor']['base_path']);
+        $container->setParameter('lexxpavlov_settings.ckeditor.js_path', $config['ckeditor']['js_path']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

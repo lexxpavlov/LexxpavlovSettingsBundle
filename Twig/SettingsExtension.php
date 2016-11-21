@@ -6,9 +6,12 @@ use Lexxpavlov\SettingsBundle\Service\Settings;
 
 class SettingsExtension extends \Twig_Extension
 {
-    /** @var  Settings */
+    /** @var Settings */
     private $settings;
 
+    /**
+     * @param Settings $settings
+     */
     public function __construct(Settings $settings)
     {
         $this->settings = $settings;

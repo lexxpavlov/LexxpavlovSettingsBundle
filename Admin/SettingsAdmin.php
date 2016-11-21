@@ -2,7 +2,7 @@
 
 namespace Lexxpavlov\SettingsBundle\Admin;
 
-use Sonata\AdminBundle\Admin\Admin;
+use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -10,15 +10,16 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 use Lexxpavlov\SettingsBundle\DBAL\SettingsType;
 use Lexxpavlov\SettingsBundle\Entity\Settings;
+use Lexxpavlov\SettingsBundle\Form\Type\SettingValueType;
 
-class SettingsAdmin extends Admin
+class SettingsAdmin extends AbstractAdmin
 {
     public function configureListFields(ListMapper $listMapper)
     {
         $listMapper
             ->addIdentifier('name')
             ->add('category')
-            ->add('type', 'choice', array('choices' => SettingsType::getChoices(), 'catalogue' => 'messages'))
+            ->add('type', 'choice', array('choices' => SettingsType::getReadableValues(), 'catalogue' => 'messages'))
             ->add('value', null, array('template' => 'LexxpavlovSettingsBundle:Admin:list_value.html.twig'))
             ->add('comment')
         ;
@@ -26,16 +27,17 @@ class SettingsAdmin extends Admin
 
     public function configureFormFields(FormMapper $formMapper)
     {
+        $valueType = method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')
+            ? 'Lexxpavlov\SettingsBundle\Form\Type\SettingValueType'
+            : 'setting_value';
         $formMapper
             ->add('name')
             ->add('category', 'sonata_type_model_list')
             ->add('type', 'choice', array(
                 'choices' => SettingsType::getChoices(),
-                'empty_value' => '',
-                'disabled' => $this->getSubject()->getId() > 0,
                 'attr' => array('data-sonata-select2'=>'false'),
             ))
-            ->add('value', 'setting_value')
+            ->add('value', $valueType)
             ->add('comment')
         ;
     }
@@ -62,14 +64,25 @@ class SettingsAdmin extends Admin
     /**
      * @param Settings $object
      */
+    public function postPersist($object)
+    {
+        $this->clearCache($object);
+    }
+
+    /**
+     * @param Settings $object
+     */
     public function postUpdate($object)
     {
-        /** @var \Lexxpavlov\SettingsBundle\Service\Settings $settings */
-        $settings = $this->getConfigurationPool()->getContainer()->get('lexxpavlov_settings.settings');
-        $settings->clearCache($object->getName());
-        if ($object->getCategory()) {
-            $settings->clearGroupCache($object->getCategory()->getName());
-        }
+        $this->clearCache($object);
+    }
+
+    /**
+     * @param Settings $object
+     */
+    public function preRemove($object)
+    {
+        $this->clearCache($object);
     }
 
     public function getFormTheme()
@@ -78,5 +91,18 @@ class SettingsAdmin extends Admin
             parent::getFormTheme(),
             array('LexxpavlovSettingsBundle:Form:setting_value_edit.html.twig')
         );
+    }
+
+    /**
+     * @param Settings $object
+     */
+    private function clearCache(Settings $object)
+    {
+        /** @var \Lexxpavlov\SettingsBundle\Service\Settings $settings */
+        $settings = $this->getConfigurationPool()->getContainer()->get('lexxpavlov_settings.settings');
+        $settings->clearCache($object->getName());
+        if ($object->getCategory()) {
+            $settings->clearGroupCache($object->getCategory()->getName());
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace Lexxpavlov\SettingsBundle\Service;
 
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Lexxpavlov\SettingsBundle\DBAL\SettingsType;
 use Lexxpavlov\SettingsBundle\Entity\Category;
 use Lexxpavlov\SettingsBundle\Entity\Settings as SettingsEntity;
@@ -11,18 +12,23 @@ use Lexxpavlov\SettingsBundle\Entity\SettingsRepository;
 
 class Settings
 {
-    /** @var  EntityManager */
+    /** @var EntityManager */
     private $em;
 
-    /** @var  CacheProvider */
+    /** @var CacheProvider */
     private $cache;
 
-    /** @var  SettingsRepository */
+    /** @var SettingsRepository */
     private $repository;
 
     private $settings = array();
     private $groups = array();
 
+    /**
+     * @param EntityManager $em
+     * @param ContainerInterface $container
+     * @param string $cacheServiceName
+     */
     public function __construct(EntityManager $em, $container, $cacheServiceName)
     {
         $this->em = $em;
@@ -52,6 +58,7 @@ class Settings
         $list = $this->repository->getGroup($name);
 
         $settings = array();
+        /** @var SettingsEntity $setting */
         foreach ($list as $setting) {
             $settings[$setting->getName()] = $setting->getValue();
         }
@@ -181,6 +188,16 @@ class Settings
         }
     }
 
+    /**
+     * Create a new setting
+     *
+     * @param string $category Category
+     * @param string $name Name of setting
+     * @param string $type Type
+     * @param mixed $value Value
+     * @param string $comment Comment
+     * @return SettingsEntity
+     */
     public function create($category, $name, $type, $value, $comment = null)
     {
         if (!in_array($type, SettingsType::getValues())) {
@@ -204,14 +221,18 @@ class Settings
 
         if ($category) {
             $this->groups[$category->getName()][$name] = $value;
+            $this->clearGroupCache($category->getName());
         } else {
             $this->settings[$name] = $value;
+            $this->clearCache($name);
         }
 
         return $setting;
     }
 
     /**
+     * Create a new settings category
+     *
      * @param string $name Name of new category
      * @param string|null $comment Optional comment
      */
@@ -223,6 +244,7 @@ class Settings
             ->setComment($comment)
         ;
         $this->saveCategory($category);
+        $this->clearGroupCache($category->getName());
     }
 
     /**

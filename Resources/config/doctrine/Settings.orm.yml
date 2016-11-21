@@ -20,6 +20,7 @@ Lexxpavlov\SettingsBundle\Entity\Settings:
             length: 50
         value:
             type: text
+            nullable: true
         comment:
             type: text
             nullable: true

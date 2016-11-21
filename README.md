@@ -1,14 +1,15 @@
 LexxpavlovSettingsBundle
 =================
 
-This bundle helps you to manage your settings in Symfony2 project.
+This bundle helps you to manage your settings in Symfony2/3 project.
 
-Settings has one of type: Boolean, Integer, Float, String, Text, Html. You may get one separate setting or fetch group
+Settings has one of types: Boolean, Integer, Float, String, Text, Html. You may get one concrete setting or fetch group
 of settings. Fetching of settings may be cached by your cache provider used in project.
 
-Management of settings provides by SonataAdminBundle. In other case you may manage settings via code by use special functions.
+Management of settings provides by SonataAdminBundle. In other case you may manage settings via code by use special 
+functions or predefined forms.
 
-Installation (>=Symfony 2.1)
+Installation
 ------------
 
 ### Composer
@@ -18,16 +19,16 @@ Download LexxpavlovSettingsBundle and its dependencies to the vendor directory.
 You can use Composer for the automated process:
 
 ```bash
-$ php composer.phar require lexxpavlov/settingsbundle
+$ composer require lexxpavlov/settingsbundle
 ```
 
-or manually add link to bundle into your `composer.json` and run `$ php composer.phar update`:
+or manually add link to bundle into your `composer.json` and run `$ composer update`:
 
 ```json
 {
     "require" : {
-        "lexxpavlov/settingsbundle": "~1.0"
-    },
+        "lexxpavlov/settingsbundle": "~1.2"
+    }
 }
 ```
 
@@ -49,25 +50,17 @@ public function registerBundles()
 }
 ```
 
-Configuration
--------------
+### Configuration
 
 Bundle does not need any required parameters and will work without changes in `config.yml`. But you may config some 
 parameters, read more below.
 
-But you need to set up `enum` mapping type in Doctrine config:
-
-```yaml
-# app/config/config.yml
-doctrine:
-    dbal:
-        mapping_types:
-            enum: string
-```
-
-
 Now you need create the tables in your database:
 
+```bash
+$ php bin/console doctrine:schema:update --dump-sql
+```
+or in Symfony2:
 ```bash
 $ php app/console doctrine:schema:update --dump-sql
 ```
@@ -75,28 +68,30 @@ $ php app/console doctrine:schema:update --dump-sql
 This will show SQL queries for creating of tables in the database. You may manually run these queries.
 
 > **Note.**
-You may also execute `php app/console doctrine:schema:update --force` command, and Doctrine will create needed
+You may also execute `php bin/console doctrine:schema:update --force` command, and Doctrine will create needed
 tables for you. But I strongly recommend you to execute `--dump-sql` first and check SQL, which Doctrine will execute.
+
+> **Note.**
+If you use 1.1.* version of bundle, you need to update database.
 
 Usage
 -----
 
-Use SonataAdminBundle for manage your settings. This bundle haven't admin tools without Sonata. But you feel free to 
+Use SonataAdminBundle for manage your settings. Otherwise use predefined forms. You feel free to 
 use the bundle if you configure settings with database tool (phpMyAdmin or other) or by use special functions called in 
-your code (e.g. in the controller).
+your code (see below).
 
 You may put settings to group or not. Groups may be used for fetching several settings at one query.
 
 Fetching of settings are supported in twig templates or in controller (or in any script where settings service are injected).
 
 For example, you created 3 settings:
-* `page_title` without group (in empty group)
+* `page_title` without group
 * `description` and `keywords` in `meta` group.
 
 ##### Use in controller
 
 ```php
-
 namespace App\YourBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -131,7 +126,7 @@ class DefaultController extends Controller
 {% extends '::layout.html.twig'%}
 
 {% block meta %}
-<title>{{ settings('title') }}</title>
+<title>{{ settings('page_title') }}</title>
 <meta name="description" content="{{ settings('meta', 'description') }}">
 <meta name="keywords" content="{{ settings('meta', 'keywords') }}">
 {% endblock %}
@@ -142,17 +137,20 @@ Advanced usage
 
 ### Full configuration
 
-Here is the default configuration for the bundle:
+Here is the default configuration for the bundle (all parameters are optional):
 
 ```yaml
 lexxpavlov_settings:
-    enable_short_service: true # (optional) default true, use false for disable registering 'settings' service
-    html_widget: ckeditor      # (optional) default null, use ckeditor if IvoryCKEditorBundle installed
-    cache_provider: cache      # (optional) default null, for enable database caching set up name of caching service 
-                               #            (that implements Doctrine\Common\Cache\CacheProvider)
+    enable_short_service: true # default true, use false for disable registering 'settings' service
+    html_widget: ckeditor      # default null, valid values are 'null', 'ckeditor'
+    cache_provider: cache      # default null, for enable database caching set up name of caching service 
+    ckeditor:                  # set parameters of ckeditor. Not need if IvoryCKEditorBundle is installed
+        base_path: /ckeditor/            
+        js_path: /ckeditor/ckeditor.js
 ```
 
-`ckeditor` form type is added by [IvoryCKEditorBundle](https://github.com/egeloen/IvoryCKEditorBundle).
+`ckeditor` form type may be added by [IvoryCKEditorBundle](https://github.com/egeloen/IvoryCKEditorBundle). If you are 
+using CKEditor without `IvoryCKEditorBundle`, you must specify the parameters `base_path` and `js_path`.
 
 ### Groups of settings
 
@@ -177,7 +175,7 @@ be only one time.
 
 <ul>
 <li>{{ params.param1 }}</li>
-<li>{{ params['param2'] }}</li>
+<li>{{ params['param-2'] }}</li>
 </ul>
 ```
 
@@ -197,7 +195,7 @@ lexxpavlov_settings:
     cache_provider: cache
 ```
 
-The bundle will use registered service `cache` for cache data to it.
+The bundle will use registered service `cache` for cache data. Cache provider must extend `Doctrine\Common\Cache\CacheProvider`.
 
 ### Manage settings without Sonata Admin
 
@@ -208,13 +206,13 @@ If you don't use SonataAdminBundle in your project, you may use predefined forms
 Save setting:
 ```php
 $form = $this->createForm('lexxpavlov_settings');
+// $form->setData($setting); // use for edit of existed setting
 if ($request->isMethod('POST')) {
     $form->handleRequest($request);
     if ($form->isValid()) {
         $this->get('settings')->save($form->getData());
     }
 }
-
 return array( 'form' => $form->createView() );
 ```
 Save group:
@@ -226,8 +224,16 @@ if ($request->isMethod('POST')) {
         $this->get('settings')->saveGroup($form->getData());
     }
 }
-
 return array( 'form' => $form->createView() );
+```
+
+For use predefined forms, you need add form theme:
+```yaml
+# app/config/config.yml
+twig:
+    # ...
+    form_themes:
+        - 'LexxpavlovSettingsBundle:Form:setting_value_edit.html.twig'
 ```
 
 ##### Manual create and update settings
