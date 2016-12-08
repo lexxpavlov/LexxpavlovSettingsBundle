@@ -2,10 +2,11 @@
 {% set widget_id = random()  %}
 {% set subject = form.parent.vars.value|default({id: 0, type: null, value: null}) %}
 {% set value = subject.value %}
-{% set attr = attr|merge({'data-type': 'type'}) %}
+{% set _attr = attr|merge({'data-type': subject.type}) %}
 <div class="lexxpavlov_settings_value_container">
 {%- spaceless %}
     {% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::Boolean') %}
+        {% set attr = _attr %}
         {% if value == true %}
             {% set value = 'on' %}
         {% elseif value == false %}
@@ -15,56 +16,54 @@
     {% endif %}
     {% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::Integer') %}
         {% set type = 'number' %}
+        {% set attr = _attr %}
         {{ block('form_widget_simple') }}
     {% endif %}
     {% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::Float') %}
         {% set type = 'number' %}
-        {% set attr = attr|merge({step:'any'}) %}
+        {% set attr = _attr|merge({step:'any'}) %}
         {{ block('form_widget_simple') }}
     {% endif %}
     {% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::String') %}
         {% set type = 'text' %}
+        {% set attr = _attr %}
         {{ block('form_widget_simple') }}
     {% endif %}
     {% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::Text') %}
+        {% set attr = _attr %}
         {{ block('textarea_widget') }}
     {% endif %}
     {% if subject.type is constant('Lexxpavlov\\SettingsBundle\\DBAL\\SettingsType::Html') %}
+        {% set attr = _attr %}
         {{ block(html_widget ? html_widget~'_widget': 'textarea_widget') }}
     {% endif %}
 {% endspaceless %}
 </div>
 {% set value = null %}
 <script type="text/html" id="tpl_widget_boolean_{{ widget_id }}">
-{%- set current_type = 'boolean' -%}
-{%- set attr = attr|merge({'data-type': current_type}) -%}
+{%- set attr = _attr|merge({'data-type': 'boolean'}) -%}
 {{- block('choice_widget') -}}
 </script>
 <script type="text/html" id="tpl_widget_int_{{ widget_id }}">
 {%- set type = 'number' -%}
-{%- set current_type = 'int' -%}
-{%- set attr = attr|merge({'data-type': current_type}) -%}
+{%- set attr = _attr|merge({'data-type': 'int'}) -%}
 {{- block('form_widget_simple') -}}
 </script>
 <script type="text/html" id="tpl_widget_float_{{ widget_id }}">
-{%- set current_type = 'float' -%}
-{%- set attr = attr|merge({'data-type': current_type, step:'any'}) -%}
+{%- set attr = _attr|merge({'data-type': 'float', step:'any'}) -%}
 {{- block('form_widget_simple') -}}
 </script>
 <script type="text/html" id="tpl_widget_string_{{ widget_id }}">
 {%- set type = 'text' -%}
-{%- set current_type = 'string' -%}
-{%- set attr = attr|merge({'data-type': current_type}) -%}
+{%- set attr = _attr|merge({'data-type':  'string'}) -%}
 {{- block('form_widget_simple') -}}
 </script>
 <script type="text/html" id="tpl_widget_text_{{ widget_id }}">
-{%- set current_type = 'text' -%}
-{%- set attr = attr|merge({'data-type': current_type}) -%}
+{%- set attr = _attr|merge({'data-type': 'text'}) -%}
 {{- block('textarea_widget') -}}
 </script>
 <script type="text/html" id="tpl_widget_html_{{ widget_id }}">
-{%- set current_type = 'html' -%}
-{%- set attr = attr|merge({'data-type': current_type}) -%}
+{%- set attr = _attr|merge({'data-type': 'html'}) -%}
 {{- block('textarea_widget') -}}
 </script>
 {% if html_widget == 'ckeditor' %}

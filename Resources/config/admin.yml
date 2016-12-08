@@ -2,7 +2,7 @@ services:
     lexxpavlov.sonata.admin.settings_categories:
         class: Lexxpavlov\SettingsBundle\Admin\CategoryAdmin
         tags:
-            - { name: sonata.admin, manager_type: orm, group: "Settings", label: "Categories", label_catalogue: "messages" }
+            - { name: sonata.admin, manager_type: orm, group: "Settings", label: "Categories", label_catalogue: "messages", icon: '<i class="fa fa-wrench"></i>' }
         arguments:
             - ~
             - Lexxpavlov\SettingsBundle\Entity\Category
@@ -13,7 +13,7 @@ services:
     lexxpavlov.sonata.admin.settings:
         class: Lexxpavlov\SettingsBundle\Admin\SettingsAdmin
         tags:
-            - { name: sonata.admin, manager_type: orm, group: "Settings", label: "Settings", label_catalogue: "messages" }
+            - { name: sonata.admin, manager_type: orm, group: "Settings", label: "Settings", label_catalogue: "messages", icon: '<i class="fa fa-wrench"></i>' }
         arguments:
             - ~
             - Lexxpavlov\SettingsBundle\Entity\Settings

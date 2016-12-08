@@ -197,6 +197,25 @@ lexxpavlov_settings:
 
 The bundle will use registered service `cache` for cache data. Cache provider must extend `Doctrine\Common\Cache\CacheProvider`.
 
+### Arrange Settings admin group in SonataAdminBundle
+
+`SonataAdminBundle` arranges admin groups by its bundles in `AppKernel::registerBundles()`. If `LexxpavlovSettingsBundle` 
+is added above your app bundles, then Settings group will be first group in menu (before your content or service groups, 
+created in your bundles). If you want that settings group will be last group (below your groups), you add 
+`LexxpavlovSettingsBundle` after your bundle in `AppKernel::registerBundles()`:
+```php
+// app/AppKernel.php
+
+public function registerBundles()
+{
+    $bundles = array(
+        // ...
+        new AppBundle\AppBundle(),
+        new Lexxpavlov\SettingsBundle\LexxpavlovSettingsBundle(),
+    );
+}
+```
+
 ### Manage settings without Sonata Admin
 
 If you don't use SonataAdminBundle in your project, you may use predefined forms or special functions.

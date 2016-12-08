@@ -27,9 +27,13 @@ class LexxpavlovSettingsExtension extends Extension
         $container->setParameter('lexxpavlov_settings.ckeditor.base_path', $config['ckeditor']['base_path']);
         $container->setParameter('lexxpavlov_settings.ckeditor.js_path', $config['ckeditor']['js_path']);
 
+        $bundles = $container->getParameter('kernel.bundles');
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
-        $loader->load('admin.yml');
+        if (isset($bundles['SonataAdminBundle'])) {
+            $loader->load('admin.yml');
+        }
         if ($config['enable_short_service']) {
             $loader->load('settings_service.yml');
         }
