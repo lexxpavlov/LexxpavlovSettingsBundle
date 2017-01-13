@@ -1,5 +1,5 @@
 LexxpavlovSettingsBundle
-=================
+========================
 
 This bundle helps you to manage your settings in Symfony2/3 project.
 
@@ -32,12 +32,11 @@ or manually add link to bundle into your `composer.json` and run `$ composer upd
 }
 ```
 
-Composer will install bundle to `vendor/lexxpavlov` directory.
+Composer will install bundle to `vendor/lexxpavlov/settingsbundle` directory.
 
 ### Adding bundle to your application kernel
 
 ```php
-
 // app/AppKernel.php
 
 public function registerBundles()
@@ -123,7 +122,7 @@ class DefaultController extends Controller
 ##### Use in template
 
 ```twig
-{% extends '::layout.html.twig'%}
+{% extends '::base.html.twig'%}
 
 {% block meta %}
 <title>{{ settings('page_title') }}</title>
@@ -168,7 +167,7 @@ $param2 = $cat['param2'];
 Both of cases has an identical perfomance - the whole group will fetch while first access to it, fetching of data will 
 be only one time.
 
-### Using groups in twig
+#### Using groups in twig
 
 ```twig
 {% set params = settings_group('category') %}
@@ -177,6 +176,24 @@ be only one time.
 <li>{{ params.param1 }}</li>
 <li>{{ params['param-2'] }}</li>
 </ul>
+```
+
+#### Example of using the settings group
+
+There is an example of group using - settings which used in backend and frontend. Several settings are placed in 
+`client` group, and include to template:
+```twig
+{# app/Resources/views/base.html.twig #}
+
+{# ... #}
+
+<script>
+{% block javascript_inline %}
+window.settings = {{ settings_group('client')|json_encode(constant('JSON_NUMERIC_CHECK'))|raw }};
+{% endblock %}
+</script>
+
+</body></html>
 ```
 
 ### Perfomance and caching
