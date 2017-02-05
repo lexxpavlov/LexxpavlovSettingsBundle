@@ -23,6 +23,7 @@ class LexxpavlovSettingsExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('lexxpavlov_settings.cache_provider', $config['cache_provider']);
+        $container->setParameter('lexxpavlov_settings.use_category_comment', $config['use_category_comment']);
         $container->setParameter('lexxpavlov_settings.html_widget', $config['html_widget']);
         $container->setParameter('lexxpavlov_settings.ckeditor.base_path', $config['ckeditor']['base_path']);
         $container->setParameter('lexxpavlov_settings.ckeditor.js_path', $config['ckeditor']['js_path']);

@@ -140,10 +140,11 @@ Here is the default configuration for the bundle (all parameters are optional):
 
 ```yaml
 lexxpavlov_settings:
-    enable_short_service: true # default true, use false for disable registering 'settings' service
-    html_widget: ckeditor      # default null, valid values are 'null', 'ckeditor'
-    cache_provider: cache      # default null, for enable database caching set up name of caching service 
-    ckeditor:                  # set parameters of ckeditor. Not need if IvoryCKEditorBundle is installed
+    enable_short_service: true  # default true, use false for disable registering 'settings' service
+    html_widget: ckeditor       # default null, valid values are 'null', 'ckeditor'
+    cache_provider: cache       # default null, for enable database caching set up name of caching service
+    use_category_comment: false # default false, use category comment as its title in settings list (in SettingsAdmin)
+    ckeditor:                   # set parameters of ckeditor. Not need if IvoryCKEditorBundle is installed
         base_path: /ckeditor/            
         js_path: /ckeditor/ckeditor.js
 ```

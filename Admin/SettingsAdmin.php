@@ -10,15 +10,20 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 use Lexxpavlov\SettingsBundle\DBAL\SettingsType;
 use Lexxpavlov\SettingsBundle\Entity\Settings;
-use Lexxpavlov\SettingsBundle\Form\Type\SettingValueType;
+use Lexxpavlov\SettingsBundle\Entity\Category;
 
 class SettingsAdmin extends AbstractAdmin
 {
     public function configureListFields(ListMapper $listMapper)
     {
+        $useCategoryComment = $this->getConfigurationPool()->getContainer()
+            ->getParameter('lexxpavlov_settings.use_category_comment');
+
         $listMapper
             ->addIdentifier('name')
-            ->add('category')
+            ->add('category', null, array('associated_property' => function(Category $cat) use ($useCategoryComment) {
+                return $useCategoryComment && $cat->getComment() ? $cat->getComment() : $cat->getName();
+            }))
             ->add('type', 'choice', array('choices' => SettingsType::getReadableValues(), 'catalogue' => 'messages'))
             ->add('value', null, array('template' => 'LexxpavlovSettingsBundle:Admin:list_value.html.twig'))
             ->add('comment')
