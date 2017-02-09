@@ -21,9 +21,14 @@ class SettingsAdmin extends AbstractAdmin
 
         $listMapper
             ->addIdentifier('name')
-            ->add('category', null, array('associated_property' => function(Category $cat) use ($useCategoryComment) {
-                return $useCategoryComment && $cat->getComment() ? $cat->getComment() : $cat->getName();
-            }))
+            ->add('category', null, array(
+                'associated_property' => function(Category $cat) use ($useCategoryComment) {
+                    return $useCategoryComment && $cat->getComment() ? $cat->getComment() : $cat->getName();
+                },
+                'sortable' => true,
+                'sort_field_mapping' => array('fieldName' => 'name'),
+                'sort_parent_association_mappings' => array(array('fieldName' => 'category'))
+            ))
             ->add('type', 'choice', array('choices' => SettingsType::getReadableValues(), 'catalogue' => 'messages'))
             ->add('value', null, array('template' => 'LexxpavlovSettingsBundle:Admin:list_value.html.twig'))
             ->add('comment')
@@ -32,7 +37,7 @@ class SettingsAdmin extends AbstractAdmin
 
     public function configureFormFields(FormMapper $formMapper)
     {
-        $valueType = method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')
+        $valueType = $this->isNewForm()
             ? 'Lexxpavlov\SettingsBundle\Form\Type\SettingValueType'
             : 'setting_value';
         $formMapper
@@ -49,8 +54,17 @@ class SettingsAdmin extends AbstractAdmin
 
     public function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
+        $useCategoryComment = $this->getConfigurationPool()->getContainer()
+            ->getParameter('lexxpavlov_settings.use_category_comment');
+
+        $categoryOptions = $this->isNewForm()
+            ? array(
+                'choice_label' => function (Category $cat) use ($useCategoryComment) {
+                    return $useCategoryComment && $cat->getComment() ? $cat->getComment() : $cat->getName();
+                },
+            ) : array();
         $datagridMapper
-            ->add('category')
+            ->add('category', null, array(), null, $categoryOptions)
             ->add('name')
             ->add('type', null, array(), 'choice', array('choices' => SettingsType::getChoices()))
         ;
@@ -109,5 +123,13 @@ class SettingsAdmin extends AbstractAdmin
         if ($object->getCategory()) {
             $settings->clearGroupCache($object->getCategory()->getName());
         }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isNewForm()
+    {
+        return method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix');
     }
 }
