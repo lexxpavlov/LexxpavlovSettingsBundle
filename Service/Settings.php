@@ -2,9 +2,8 @@
 
 namespace Lexxpavlov\SettingsBundle\Service;
 
-use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Lexxpavlov\SettingsBundle\Cache\AdapterCacheInterface;
 use Lexxpavlov\SettingsBundle\DBAL\SettingsType;
 use Lexxpavlov\SettingsBundle\Entity\Category;
 use Lexxpavlov\SettingsBundle\Entity\Settings as SettingsEntity;
@@ -15,7 +14,7 @@ class Settings
     /** @var EntityManager */
     private $em;
 
-    /** @var CacheProvider */
+    /** @var AdapterCacheInterface */
     private $cache;
 
     /** @var SettingsRepository */
@@ -26,15 +25,14 @@ class Settings
 
     /**
      * @param EntityManager $em
-     * @param ContainerInterface $container
-     * @param string $cacheServiceName
+     * @param AdapterCacheInterface|null $cache
      */
-    public function __construct(EntityManager $em, $container, $cacheServiceName)
+    public function __construct(EntityManager $em, $cache)
     {
-        $this->em = $em;
-        if ($cacheServiceName && $container->has($cacheServiceName)) {
-            $this->cache = $container->get($cacheServiceName);
+        if ($cache instanceof AdapterCacheInterface) {
+            $this->cache = $cache;
         }
+        $this->em = $em;
         $this->repository = $em->getRepository('Lexxpavlov\SettingsBundle\Entity\Settings');
     }
 
@@ -68,10 +66,11 @@ class Settings
     private function load($name)
     {
         if ($this->cache) {
-            $value = $this->cache->fetch($this->getCacheKey($name));
-            if (!$value) {
+            $cacheKey = $this->getCacheKey($name);
+            $value = $this->cache->get($cacheKey);
+            if (is_null($value)) {
                 $value = $this->fetch($name);
-                $this->cache->save($this->getCacheKey($name), $value);
+                $this->cache->set($cacheKey, $value);
             }
             return $value;
         } else {
@@ -82,10 +81,11 @@ class Settings
     private function loadGroup($name)
     {
         if ($this->cache) {
-            $values = $this->cache->fetch($this->getCacheGroupKey($name));
-            if (!$values) {
+            $cacheKey = $this->getCacheGroupKey($name);
+            $values = $this->cache->get($cacheKey);
+            if (is_null($values)) {
                 $values = $this->fetchGroup($name);
-                $this->cache->save($this->getCacheGroupKey($name), $values);
+                $this->cache->set($cacheKey, $values);
             }
             return $values;
         } else {

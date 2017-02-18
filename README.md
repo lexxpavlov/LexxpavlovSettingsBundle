@@ -142,7 +142,7 @@ Here is the default configuration for the bundle (all parameters are optional):
 lexxpavlov_settings:
     enable_short_service: true  # default true, use false for disable registering 'settings' service
     html_widget: ckeditor       # default null, valid values are 'null', 'ckeditor'
-    cache_provider: cache       # default null, for enable database caching set up name of caching service
+    cache_provider: cache.app   # default null, for enable database caching set up name of caching service
     use_category_comment: false # default false, use category comment as its title in settings list (in SettingsAdmin)
     ckeditor:                   # set parameters of ckeditor. Not need if IvoryCKEditorBundle is installed
         base_path: /ckeditor/            
@@ -204,16 +204,17 @@ Use caching for increase of fetching settings. If you don't use caching already 
 ```yaml
 # app/config/services.yml
 services:
-    cache:
-        class: Doctrine\Common\Cache\FilesystemCache
-        arguments: ["%kernel.cache_dir%/cache"]
+    cache.app:
+        class: Symfony\Component\Cache\Adapter\FilesystemAdapter
 
 # app/config/config.yml
 lexxpavlov_settings:
-    cache_provider: cache
+    cache_provider: cache.app
 ```
 
-The bundle will use registered service `cache` for cache data. Cache provider must extend `Doctrine\Common\Cache\CacheProvider`.
+The bundle will use registered service `cache.app` for cache data. Cache provider may be one of 
+[Doctrine cache](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/caching.html) or 
+[Symfony cache](https://symfony.com/doc/current/components/cache.html) - PSR-6 Cache (Symfony 3.1) or PSR-16 Simple Cache (Symfony 3.3).
 
 ### Arrange Settings admin group in SonataAdminBundle
 
