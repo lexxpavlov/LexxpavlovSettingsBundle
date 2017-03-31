@@ -9,6 +9,10 @@ use Lexxpavlov\SettingsBundle\Entity\Category;
 use Lexxpavlov\SettingsBundle\Entity\Settings as SettingsEntity;
 use Lexxpavlov\SettingsBundle\Entity\SettingsRepository;
 
+/**
+ * Class Settings
+ * @package Lexxpavlov\SettingsBundle\Service
+ */
 class Settings
 {
     /** @var EntityManager */
@@ -48,7 +52,12 @@ class Settings
 
     private function fetch($name)
     {
-        return $this->repository->findOneBy(array('name' => $name))->getValue();
+        $setting = $this->repository->findOneBy(array('name' => $name));
+        if ($setting) {
+            return $setting->getValue();
+        }
+
+        return null;
     }
 
     private function fetchGroup($name)
@@ -98,19 +107,24 @@ class Settings
      *
      * @param string $name Setting name or group name (if $subname is set)
      * @param string|null $subname Setting name (use with $name as group name)
+     * @param mixed|null $default The default value if the setting key does not exist
      * @return mixed
      */
-    public function get($name, $subname = null)
+    public function get($name, $subname = null, $default = null)
     {
         if ($subname) {
             $group = $this->group($name);
-            return $group[$subname];
+            if (isset($group[$subname])) {
+                return $group[$subname];
+            }
         } else {
             if (!isset($this->settings[$name])) {
                 $this->settings[$name] = $this->load($name);
             }
             return $this->settings[$name];
         }
+
+        return $default;
     }
 
     /**
