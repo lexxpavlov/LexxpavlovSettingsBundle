@@ -1,7 +1,6 @@
 {
     "name" : "lexxpavlov/settingsbundle",
     "description" : "Symfony2/3 Settings bundle provides flexible settings (Boolean, Integer, Float, String, Text, Html), easily configurable with Sonata Admin",
-    "version" : "1.3.0",
     "type" : "symfony-bundle",
     "homepage": "https://github.com/lexxpavlov/LexxpavlovSettingsBundle",
     "license" : "MIT",
