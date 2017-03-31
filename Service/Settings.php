@@ -52,12 +52,12 @@ class Settings
 
     private function fetch($name)
     {
-        $value = $this->repository->findOneBy(array('name' => $name));
-        if ($value) {
-            return $value->getValue();
+        $setting = $this->repository->findOneBy(array('name' => $name));
+        if ($setting) {
+            return $setting->getValue();
         }
 
-        return "";
+        return null;
     }
 
     private function fetchGroup($name)
@@ -107,7 +107,7 @@ class Settings
      *
      * @param string $name Setting name or group name (if $subname is set)
      * @param string|null $subname Setting name (use with $name as group name)
-     * @param null $default The default value if the setting key does not exist
+     * @param mixed|null $default The default value if the setting key does not exist
      * @return mixed
      */
     public function get($name, $subname = null, $default = null)
