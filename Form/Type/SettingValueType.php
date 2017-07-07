@@ -7,17 +7,21 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SettingValueType extends AbstractType
 {
+    /** @var ContainerInterface */
     private $container;
+
+    /** @var string */
     private $htmlWidget;
 
     /**
      * @param ContainerInterface $container
      * @param string $htmlWidget
      */
-    public function __construct($container, $htmlWidget)
+    public function __construct(ContainerInterface $container, $htmlWidget)
     {
         $this->container = $container;
         $this->htmlWidget = $htmlWidget;
@@ -47,20 +51,17 @@ class SettingValueType extends AbstractType
         ));
         if ($this->htmlWidget == 'ckeditor') {
             if ($this->container->has('ivory_ck_editor.form.type')) {
-                /** @var \Ivory\CKEditorBundle\Form\Type\CKEditorType $ckeditorFormType */
-                $ckeditorFormType = $this->container->get('ivory_ck_editor.form.type');
-                /** @var \Ivory\CKEditorBundle\Renderer\CKEditorRenderer $ckeditorRenderer */
-                $ckeditorRenderer = $this->container->get('ivory_ck_editor.renderer');
-                $view->vars = array_replace($view->vars, array(
-                    'enable' => true,
-                    'autoload' => true,
-                    'base_path' => $ckeditorRenderer->renderBasePath($ckeditorFormType->getBasePath()),
-                    'js_path' => $ckeditorRenderer->renderJsPath($ckeditorFormType->getJsPath()),
-                    'config' => array(),
-                    'plugins' => array(),
-                    'styles' => array(),
-                    'templates' => array(),
-                ));
+                $resolver = new OptionsResolver();
+                $builder = $this->container->get('form.factory')->createBuilder();
+
+                $ckeditorType = $this->container->get('ivory_ck_editor.form.type');
+                if (method_exists($ckeditorType, 'configureOptions')) {
+                    $ckeditorType->configureOptions($resolver);
+                } else {
+                    $ckeditorType->setDefaultOptions($resolver);
+                }
+                $ckeditorType->buildForm($builder, $resolver->resolve());
+                $ckeditorType->buildView($view, $builder->getForm(), []);
             } else {
                 $view->vars = array_replace($view->vars, array(
                     'base_path' => $this->container->getParameter('lexxpavlov_settings.ckeditor.base_path'),
@@ -82,6 +83,14 @@ class SettingValueType extends AbstractType
      * {@inheritdoc}
      */
     public function getName()
+    {
+        return $this->getBlockPrefix();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
     {
         return 'setting_value';
     }
