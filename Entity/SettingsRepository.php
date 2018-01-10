@@ -12,10 +12,12 @@ class SettingsRepository extends EntityRepository
      */
     public function getGroup($name)
     {
-        return $this->_em
-            ->createQuery("SELECT s FROM LexxpavlovSettingsBundle:Settings s INNER JOIN LexxpavlovSettingsBundle:Category g WHERE g.id = s.category AND g.name = ?1")
-            ->setParameter(1, $name)
-            ->getResult();
+        return $this->createQueryBuilder('s')
+                    ->innerJoin('s.category', 'c')
+                    ->where('c.name = :name')
+                    ->setParameter('name', $name)
+                    ->getQuery()
+                    ->getResult();
     }
 
     /**
