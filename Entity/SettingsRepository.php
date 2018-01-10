@@ -13,11 +13,11 @@ class SettingsRepository extends EntityRepository
     public function getGroup($name)
     {
         return $this->createQueryBuilder('s')
-                        ->innerJoin('s.category', 'c')
-                        ->where('c.name = :name')
-                        ->setParameter('name', $name)
-                        ->getQuery()
-                            ->getResult();
+                    ->innerJoin('s.category', 'c')
+                    ->where('c.name = :name')
+                    ->setParameter('name', $name)
+                    ->getQuery()
+                    ->getResult();
     }
 
     /**
