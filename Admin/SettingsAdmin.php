@@ -7,6 +7,8 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\AdminBundle\Form\Type\ModelListType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 use Lexxpavlov\SettingsBundle\DBAL\SettingsType;
 use Lexxpavlov\SettingsBundle\Entity\Settings;
@@ -29,7 +31,7 @@ class SettingsAdmin extends AbstractAdmin
                 'sort_field_mapping' => array('fieldName' => 'name'),
                 'sort_parent_association_mappings' => array(array('fieldName' => 'category'))
             ))
-            ->add('type', 'choice', array('choices' => SettingsType::getReadableValues(), 'catalogue' => 'messages'))
+            ->add('type', ChoiceType::class, array('choices' => SettingsType::getReadableValues(), 'catalogue' => 'messages'))
             ->add('value', null, array('template' => 'LexxpavlovSettingsBundle:Admin:list_value.html.twig'))
             ->add('comment')
         ;
@@ -42,8 +44,8 @@ class SettingsAdmin extends AbstractAdmin
             : 'setting_value';
         $formMapper
             ->add('name')
-            ->add('category', 'sonata_type_model_list')
-            ->add('type', 'choice', array(
+            ->add('category', ModelListType::class)
+            ->add('type', ChoiceType::class, array(
                 'choices' => SettingsType::getChoices(),
                 'attr' => array('data-sonata-select2'=>'false'),
             ))
@@ -66,7 +68,7 @@ class SettingsAdmin extends AbstractAdmin
         $datagridMapper
             ->add('category', null, array(), null, $categoryOptions)
             ->add('name')
-            ->add('type', null, array(), 'choice', array('choices' => SettingsType::getChoices()))
+            ->add('type', null, array(), ChoiceType::class, array('choices' => SettingsType::getChoices()))
         ;
     }
 
