@@ -8,6 +8,10 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EntityType;
 use Lexxpavlov\SettingsBundle\DBAL\SettingsType;
 
 class Settings extends AbstractType
@@ -18,11 +22,11 @@ class Settings extends AbstractType
             ? 'Lexxpavlov\SettingsBundle\Form\Type\SettingValueType'
             : 'setting_value';
         $builder
-            ->add('category', 'entity', array('class' => 'LexxpavlovSettingsBundle:Category', 'property_path' => 'name', 'required' => false))
-            ->add('name', 'text')
-            ->add('type', 'choice', array('choices' => SettingsType::getChoices()))
+            ->add('category', EntityType::class, array('class' => 'LexxpavlovSettingsBundle:Category', 'property_path' => 'name', 'required' => false))
+            ->add('name', TextType::class)
+            ->add('type', ChoiceType::class, array('choices' => SettingsType::getChoices()))
             ->add('value', $valueType)
-            ->add('comment', 'textarea', array('required' => false))
+            ->add('comment', TextareaType::class, array('required' => false))
             ->add('save', 'submit')
         ;
     }
