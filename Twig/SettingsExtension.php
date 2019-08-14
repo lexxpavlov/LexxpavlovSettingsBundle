@@ -30,9 +30,9 @@ class SettingsExtension extends \Twig_Extension
         );
     }
 
-    public function getSettings($name, $subname = null)
+    public function getSettings($name, $subname = null, $default = null)
     {
-        return $this->settings->get($name, $subname);
+        return $this->settings->get($name, $subname, $default);
     }
 
     public function getSettingsGroup($name)

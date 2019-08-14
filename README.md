@@ -168,6 +168,18 @@ $param2 = $cat['param2'];
 Both of cases has an identical perfomance - the whole group will fetch while first access to it, fetching of data will 
 be only one time.
 
+#### Using default value in twig
+
+```twig
+{% extends '::base.html.twig'%}
+
+{% block meta %}
+<title>{{ settings('page_title', null, 'My default title') }}</title>
+<meta name="description" content="{{ settings('meta', 'description', 'My default description') }}">
+<meta name="keywords" content="{{ settings('meta', 'keywords', 'keywords1, keywords2') }}">
+{% endblock %}
+```
+
 #### Using groups in twig
 
 ```twig
