@@ -4,7 +4,7 @@ namespace Lexxpavlov\SettingsBundle\Cache;
 
 use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
-use Symfony\Component\Cache\Simple\AbstractCache;
+use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class CacheFactory
@@ -32,7 +32,7 @@ class CacheFactory
             return new SymfonyCache($service);
         } elseif ($service instanceof CacheProvider) {
             return new DoctrineCache($service);
-        } elseif ($service instanceof AbstractCache) {
+        } elseif ($service instanceof Psr16Cache) {
             return new SimpleCache($service);
         }
         return null;
