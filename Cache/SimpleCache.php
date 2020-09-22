@@ -2,17 +2,17 @@
 
 namespace Lexxpavlov\SettingsBundle\Cache;
 
-use Symfony\Component\Cache\Simple\AbstractCache;
+use Symfony\Component\Cache\Psr16Cache;
 
 class SimpleCache implements AdapterCacheInterface
 {
-    /** @var AbstractCache */
+    /** @var Psr16Cache */
     private $adapter;
 
     /**
-     * @param AbstractCache $adapter
+     * @param Psr16Cache $adapter
      */
-    public function __construct(AbstractCache $adapter)
+    public function __construct(Psr16Cache $adapter)
     {
         $this->adapter = $adapter;
     }
