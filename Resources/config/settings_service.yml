@@ -1,3 +1,4 @@
 services:
     settings:
+        public: true
         alias: lexxpavlov_settings.settings
