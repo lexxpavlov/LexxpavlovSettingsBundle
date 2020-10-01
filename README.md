@@ -1,7 +1,7 @@
 LexxpavlovSettingsBundle
 ========================
 
-This bundle helps you to manage your settings in Symfony2/3 project.
+This bundle helps you to manage your settings in Symfony2/3/4 project.
 
 Settings has one of types: Boolean, Integer, Float, String, Text, Html. You may get one concrete setting or fetch group
 of settings. Fetching of settings may be cached by your cache provider used in project.
