@@ -12,6 +12,9 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@lexxpavlov_settings.cache_provider"
 
+    Lexxpavlov\SettingsBundle\Service\Settings:
+        alias: lexxpavlov_settings.settings
+
     lexxpavlov_settings.twig.settings:
         class: Lexxpavlov\SettingsBundle\Twig\SettingsExtension
         arguments:
