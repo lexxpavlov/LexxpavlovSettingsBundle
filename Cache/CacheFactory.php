@@ -17,6 +17,10 @@ class CacheFactory
      */
     public static function createByName($serviceName, ContainerInterface $container)
     {
+        if (null === $serviceName) {
+            return null;
+        }
+        
         $service = $container->get($serviceName, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         return is_null($service) ? null : self::create($service);
     }
